@@ -25,7 +25,7 @@ public class BinanceResponseEntity {
     private Long id;
     @Column(name = "symbol", nullable = false)
     private String symbol;
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
     @Column(name = "close_time", nullable = false)
     private OffsetDateTime closeTime;
