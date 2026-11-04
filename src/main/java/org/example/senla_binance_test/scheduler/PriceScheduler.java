@@ -6,6 +6,7 @@ import org.example.senla_binance_test.client.BinanceClient;
 import org.example.senla_binance_test.dto.BinancePriceResponse;
 import org.example.senla_binance_test.exception.BinanceRateLimitException;
 import org.example.senla_binance_test.service.BinanceService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,8 @@ public class PriceScheduler {
     private final BinanceService binanceService;
 
     private Instant timeout = Instant.MIN;
+    @Value("${binance.default-symbol:BNBUSDT}")
+    private String symbol;
 
     @Scheduled(fixedRateString = "${BINANCE_POLL_INTERVAL:PT30S}")
     public void fetchPrice() {
@@ -31,9 +34,9 @@ public class PriceScheduler {
 
         try {
             log.info("Запрос средней цены");
-            BinancePriceResponse price = binanceClient.getAveragePrice("BNBUSDT");
+            BinancePriceResponse price = binanceClient.getAveragePrice(symbol);
             log.info("Получена цена: {}", price);
-            binanceService.saveIfNotExists("BNBUSDT", price);
+            binanceService.saveIfNotExists(price);
         } catch (BinanceRateLimitException e) {
             timeout = Instant.now().plusSeconds(e.getRetryAfterSeconds());
             log.error("Опрос будет приостановлен на {} секунд", e.getRetryAfterSeconds());
