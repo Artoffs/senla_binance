@@ -1,6 +1,7 @@
 package org.example.senla_binance_test.mapper;
 
 import org.example.senla_binance_test.dto.BinancePriceResponse;
+import org.example.senla_binance_test.dto.PriceResponseDto;
 import org.example.senla_binance_test.model.BinanceResponseEntity;
 
 import java.time.Instant;
@@ -24,5 +25,13 @@ public final class BinanceMapper {
         entity.setFetchedAt(OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
 
         return entity;
+    }
+
+    public static PriceResponseDto toDto(BinanceResponseEntity entity) {
+        return new PriceResponseDto(
+                entity.getSymbol(),
+                entity.getPrice(),
+                entity.getFetchedAt().withOffsetSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)
+        );
     }
 }
