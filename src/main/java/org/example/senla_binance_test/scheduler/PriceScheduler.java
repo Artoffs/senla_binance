@@ -25,7 +25,7 @@ public class PriceScheduler {
             binanceService.save("BNBUSDT", price);
             log.info("Успешно сохранено в БД");
         } catch (Exception e) {
-            log.error("ОШИБКА в шедулере: ", e); // <-- теперь ты увидишь стектрейс
+            log.error("ОШИБКА в шедулере: ", e);
         }
     }
 }
