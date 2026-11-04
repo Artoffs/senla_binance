@@ -1,6 +1,8 @@
 package org.example.senla_binance_test.repository;
 
 import org.example.senla_binance_test.model.BinanceResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +26,18 @@ public interface BinanceRepository extends JpaRepository<BinanceResponseEntity, 
             @Param("symbol") String symbol,
             @Param("from") OffsetDateTime from,
             @Param("to") OffsetDateTime to);
+
+    Page<BinanceResponseEntity> findAllBySymbolAndFetchedAtBetweenOrderByFetchedAt(String symbol,
+                                                                                   OffsetDateTime fetchedAtAfter,
+                                                                                   OffsetDateTime fetchedAtBefore,
+                                                                                   Pageable pageable);
+
+
+    Optional<BinanceResponseEntity> findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtAsc(String symbol,
+                                                                                   OffsetDateTime fetchedAtAfter,
+                                                                                   OffsetDateTime fetchedAtBefore);
+
+    Optional<BinanceResponseEntity> findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtDesc(String symbol,
+                                                                                   OffsetDateTime fetchedAtAfter,
+                                                                                   OffsetDateTime fetchedAtBefore);
 }
