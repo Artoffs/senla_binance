@@ -24,17 +24,20 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class BinanceService {
 
     private final BinanceRepository repository;
 
-    @Value("${binance.default-symbol:BNBUSDT}")
-    private String defaultSymbol;
+    private final String defaultSymbol;
+
+    public BinanceService(BinanceRepository repository,
+                          @Value("${binance.default-symbol:BNBUSDT}") String defaultSymbol) {
+        this.repository = repository;
+        this.defaultSymbol = defaultSymbol;
+    }
 
     @Transactional
     public void saveIfNotExists(BinancePriceResponse response) {
