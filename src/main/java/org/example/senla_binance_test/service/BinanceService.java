@@ -60,6 +60,8 @@ public class BinanceService {
 
     @Transactional(readOnly = true)
     public AveragePriceResponseDto getAverage(OffsetDateTime from, OffsetDateTime to) {
+        validateDateRange(from, to);
+
         BigDecimal avg = repository.getAverageForPeriod(defaultSymbol, from, to).orElseThrow(
                 () -> new ResourceNotFoundException("Записей в заданном интервале не найдено")
         );
@@ -68,6 +70,8 @@ public class BinanceService {
 
     @Transactional(readOnly = true)
     public PageResponseDto<PriceResponseDto> getAll(OffsetDateTime from, OffsetDateTime to, Pageable pageable) {
+
+        validateDateRange(from, to);
 
         Page<BinanceResponseEntity> pageOfEntities = repository.findAllBySymbolAndFetchedAtBetweenOrderByFetchedAt(defaultSymbol, from, to, pageable);
 
@@ -86,6 +90,9 @@ public class BinanceService {
     
     @Transactional(readOnly = true)
     public TrendResponseDto getTrend(OffsetDateTime from, OffsetDateTime to) {
+
+        validateDateRange(from, to);
+
         BinanceResponseEntity first = repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtAsc(defaultSymbol, from, to)
                 .orElseThrow(() -> new ResourceNotFoundException("Нет данных в заданном периоде"));
 
@@ -106,5 +113,14 @@ public class BinanceService {
 
         return new TrendResponseDto(defaultSymbol,
                 from, to, trendType);
+    }
+
+    private void validateDateRange(OffsetDateTime from, OffsetDateTime to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Параметры 'from' и 'to' обязательны");
+        }
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("Дата начала интервала 'from' не может быть позже 'to'");
+        }
     }
 }
