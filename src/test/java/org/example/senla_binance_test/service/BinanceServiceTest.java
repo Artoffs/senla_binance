@@ -32,6 +32,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class BinanceServiceTest {
@@ -126,6 +127,16 @@ class BinanceServiceTest {
                 .thenReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.getAverage(from, to));
+    }
+
+    @Test
+    void getAveragePrice_throwsException() {
+        OffsetDateTime from = OffsetDateTime.parse("2026-11-06T12:00:00Z");
+        OffsetDateTime to = OffsetDateTime.parse("2026-11-05T12:00:00Z");
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> service.getAverage(from, to));
+
+        verifyNoInteractions(repository);
     }
 
     @Test
