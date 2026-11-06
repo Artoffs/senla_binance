@@ -2,8 +2,12 @@ package org.example.senla_binance_test.service;
 
 import org.example.senla_binance_test.dto.AveragePriceResponseDto;
 import org.example.senla_binance_test.dto.BinancePriceResponse;
+import org.example.senla_binance_test.dto.PageResponseDto;
 import org.example.senla_binance_test.dto.PriceResponseDto;
+import org.example.senla_binance_test.dto.TrendResponseDto;
+import org.example.senla_binance_test.dto.TrendType;
 import org.example.senla_binance_test.exception.ResourceNotFoundException;
+import org.example.senla_binance_test.mapper.BinanceMapper;
 import org.example.senla_binance_test.model.BinanceResponseEntity;
 import org.example.senla_binance_test.repository.BinanceRepository;
 import org.junit.jupiter.api.Assertions;
@@ -14,11 +18,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -122,9 +131,127 @@ class BinanceServiceTest {
 
     @Test
     void getAll() {
+        OffsetDateTime from = OffsetDateTime.ofInstant(Instant.ofEpochMilli(1L), ZoneOffset.UTC);
+        OffsetDateTime to = OffsetDateTime.ofInstant(Instant.ofEpochMilli(2L), ZoneOffset.UTC);
+
+        BinanceResponseEntity binanceResponseEntity = new BinanceResponseEntity();
+        binanceResponseEntity.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setPrice(BigDecimal.valueOf(10f));
+        binanceResponseEntity.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setSymbol(defaultSymbol);
+        binanceResponseEntity.setId(1L);
+        BinanceResponseEntity binanceResponseEntity1 = new BinanceResponseEntity();
+        binanceResponseEntity1.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setPrice(BigDecimal.valueOf(20f));
+        binanceResponseEntity1.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setSymbol(defaultSymbol);
+        binanceResponseEntity1.setId(2L);
+        Pageable request = PageRequest.of(0,2);
+
+        PageImpl<BinanceResponseEntity> page = new PageImpl<>(
+                List.of(binanceResponseEntity, binanceResponseEntity1), request, 5
+        );
+
+        Mockito.when(repository.findAllBySymbolAndFetchedAtBetweenOrderByFetchedAt(defaultSymbol, from, to, request))
+                .thenReturn(page);
+
+        PageResponseDto<PriceResponseDto> result = service.getAll(from, to, request);
+
+        assertThat(result.items()).hasSize(2);
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.totalElements()).isEqualTo(5);
+        assertThat(result.hasNext()).isTrue();
+
+        Assertions.assertEquals(binanceResponseEntity.getFetchedAt().truncatedTo(ChronoUnit.SECONDS),
+                result.items().get(0).fetchedAt());
+
     }
 
     @Test
-    void getTrend() {
+    void getTrend_upward() {
+        OffsetDateTime from = OffsetDateTime.ofInstant(Instant.ofEpochMilli(1L), ZoneOffset.UTC);
+        OffsetDateTime to = OffsetDateTime.ofInstant(Instant.ofEpochMilli(2L), ZoneOffset.UTC);
+
+        BinanceResponseEntity binanceResponseEntity = new BinanceResponseEntity();
+        binanceResponseEntity.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setPrice(BigDecimal.valueOf(10f));
+        binanceResponseEntity.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setSymbol(defaultSymbol);
+        binanceResponseEntity.setId(1L);
+        BinanceResponseEntity binanceResponseEntity1 = new BinanceResponseEntity();
+        binanceResponseEntity1.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setPrice(BigDecimal.valueOf(20f));
+        binanceResponseEntity1.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setSymbol(defaultSymbol);
+        binanceResponseEntity1.setId(2L);
+
+        Mockito.when(repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtAsc(defaultSymbol, from, to))
+                .thenReturn(Optional.of(binanceResponseEntity));
+        Mockito.when(repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtDesc(defaultSymbol, from, to))
+                .thenReturn(Optional.of(binanceResponseEntity1));
+
+        TrendResponseDto trend = service.getTrend(from, to);
+
+        assertThat(trend.trend()).isEqualTo(TrendType.UPWARD);
+
+    }
+
+    @Test
+    void getTrend_downward() {
+        OffsetDateTime from = OffsetDateTime.ofInstant(Instant.ofEpochMilli(1L), ZoneOffset.UTC);
+        OffsetDateTime to = OffsetDateTime.ofInstant(Instant.ofEpochMilli(2L), ZoneOffset.UTC);
+
+        BinanceResponseEntity binanceResponseEntity = new BinanceResponseEntity();
+        binanceResponseEntity.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setPrice(BigDecimal.valueOf(20f));
+        binanceResponseEntity.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setSymbol(defaultSymbol);
+        binanceResponseEntity.setId(1L);
+        BinanceResponseEntity binanceResponseEntity1 = new BinanceResponseEntity();
+        binanceResponseEntity1.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setPrice(BigDecimal.valueOf(10f));
+        binanceResponseEntity1.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setSymbol(defaultSymbol);
+        binanceResponseEntity1.setId(2L);
+
+        Mockito.when(repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtAsc(defaultSymbol, from, to))
+                .thenReturn(Optional.of(binanceResponseEntity));
+        Mockito.when(repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtDesc(defaultSymbol, from, to))
+                .thenReturn(Optional.of(binanceResponseEntity1));
+
+        TrendResponseDto trend = service.getTrend(from, to);
+
+        assertThat(trend.trend()).isEqualTo(TrendType.DOWNWARD);
+
+    }
+
+    @Test
+    void getTrend_flat() {
+        OffsetDateTime from = OffsetDateTime.ofInstant(Instant.ofEpochMilli(1L), ZoneOffset.UTC);
+        OffsetDateTime to = OffsetDateTime.ofInstant(Instant.ofEpochMilli(2L), ZoneOffset.UTC);
+
+        BinanceResponseEntity binanceResponseEntity = new BinanceResponseEntity();
+        binanceResponseEntity.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setPrice(BigDecimal.valueOf(10f));
+        binanceResponseEntity.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(1), ZoneOffset.UTC));
+        binanceResponseEntity.setSymbol(defaultSymbol);
+        binanceResponseEntity.setId(1L);
+        BinanceResponseEntity binanceResponseEntity1 = new BinanceResponseEntity();
+        binanceResponseEntity1.setCloseTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setPrice(BigDecimal.valueOf(10f));
+        binanceResponseEntity1.setFetchedAt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(2), ZoneOffset.UTC));
+        binanceResponseEntity1.setSymbol(defaultSymbol);
+        binanceResponseEntity1.setId(2L);
+
+        Mockito.when(repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtAsc(defaultSymbol, from, to))
+                .thenReturn(Optional.of(binanceResponseEntity));
+        Mockito.when(repository.findFirstBySymbolAndFetchedAtBetweenOrderByFetchedAtDesc(defaultSymbol, from, to))
+                .thenReturn(Optional.of(binanceResponseEntity1));
+
+        TrendResponseDto trend = service.getTrend(from, to);
+
+        assertThat(trend.trend()).isEqualTo(TrendType.FLAT);
+
     }
 }
