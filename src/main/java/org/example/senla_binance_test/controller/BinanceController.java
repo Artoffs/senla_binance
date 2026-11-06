@@ -6,7 +6,6 @@ import org.example.senla_binance_test.dto.PageResponseDto;
 import org.example.senla_binance_test.dto.PriceResponseDto;
 import org.example.senla_binance_test.dto.TrendResponseDto;
 import org.example.senla_binance_test.service.BinanceService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;

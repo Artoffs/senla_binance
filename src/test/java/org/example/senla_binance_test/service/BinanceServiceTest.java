@@ -7,7 +7,6 @@ import org.example.senla_binance_test.dto.PriceResponseDto;
 import org.example.senla_binance_test.dto.TrendResponseDto;
 import org.example.senla_binance_test.dto.TrendType;
 import org.example.senla_binance_test.exception.ResourceNotFoundException;
-import org.example.senla_binance_test.mapper.BinanceMapper;
 import org.example.senla_binance_test.model.BinanceResponseEntity;
 import org.example.senla_binance_test.repository.BinanceRepository;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +45,7 @@ class BinanceServiceTest {
     private BinanceService service;
 
     @BeforeEach
-    public void setUp() {
+     void setUp() {
         service = new BinanceService(repository, defaultSymbol);
     }
 

@@ -22,7 +22,7 @@ public final class BinanceMapper {
         entity.setPrice(response.price());
         entity.setCloseTime(OffsetDateTime.ofInstant(
                 Instant.ofEpochMilli(response.closeTime()), ZoneOffset.UTC));
-        entity.setFetchedAt(OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+        entity.setFetchedAt(OffsetDateTime.now(ZoneOffset.UTC));
 
         return entity;
     }
@@ -31,7 +31,7 @@ public final class BinanceMapper {
         return new PriceResponseDto(
                 entity.getSymbol(),
                 entity.getPrice(),
-                entity.getFetchedAt().withOffsetSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)
+                entity.getFetchedAt().withOffsetSameInstant(ZoneOffset.UTC)
         );
     }
 }

@@ -9,6 +9,7 @@ import org.example.senla_binance_test.service.BinanceService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.time.Instant;
 
@@ -40,6 +41,8 @@ public class PriceScheduler {
         } catch (BinanceRateLimitException e) {
             timeout = Instant.now().plusSeconds(e.getRetryAfterSeconds());
             log.error("Опрос будет приостановлен на {} секунд", e.getRetryAfterSeconds());
+        } catch (RestClientResponseException e) {
+            log.error("Произошла ошибка при обращении к API");
         }
     }
 }
