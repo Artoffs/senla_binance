@@ -27,9 +27,9 @@ docker compose down
 
 ## Локальный запуск (без Docker для приложения)
 
-1. Поднимите локальную БД PostgreSQL (например, через Docker):
+1. Поднимите локальную БД PostgreSQL (например, через Docker Compose):
    ```bash
-   docker compose up postgres -d
+   docker compose up db -d
    ```
 2. Запустите приложение через Maven:
    ```bash
@@ -46,14 +46,14 @@ docker compose down
 
 Настройки сервиса можно переопределять через переменные окружения (в `docker-compose.yml` или системе):
 
-| Переменная | Значение по умолчанию                      | Описание |
-| :--- |:-------------------------------------------| :--- |
-| `BINANCE_POLL_INTERVAL` | `PT30S`                                    | Интервал опроса API Binance в формате ISO-8601 (например, `PT10S`, `PT1M`) |
-| `BINANCE_SYMBOL` | `BNBUSDT`                                  | Отслеживаемая торговая пара на бирже Binance |
-| `BINANCE_BASE_URL` | `https://api.binance.com`                  | Базовый URL API биржи Binance |
+| Переменная | Значение по умолчанию | Описание |
+| :--- | :--- | :--- |
+| `BINANCE_POLL_INTERVAL` | `PT30S` | Интервал опроса API Binance в формате ISO-8601 (например, `PT10S`, `PT1M`) |
+| `BINANCE_DEFAULT_SYMBOL` | `BNBUSDT` | Отслеживаемая торговая пара на бирже Binance (`binance.default-symbol`) |
+| `BINANCE_API_BASE_URL` | `https://api.binance.com/` | Базовый URL API биржи Binance (`binance.api.base-url`) |
 | `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5432/binance` | JDBC URL для подключения к базе данных PostgreSQL |
-| `SPRING_DATASOURCE_USERNAME` | `postgres`                                 | Имя пользователя базы данных |
-| `SPRING_DATASOURCE_PASSWORD` | `postgres`                                 | Пароль пользователя базы данных |
+| `SPRING_DATASOURCE_USERNAME` / `POSTGRES_USERNAME` | `postgres` | Имя пользователя базы данных |
+| `SPRING_DATASOURCE_PASSWORD` / `POSTGRES_PASSWORD` | `postgres` | Пароль пользователя базы данных |
 
 ---
 

@@ -26,11 +26,11 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/binance
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
       BINANCE_POLL_INTERVAL: ${BINANCE_POLL_INTERVAL:-PT30S}
-      BINANCE_SYMBOL: ${BINANCE_SYMBOL:-BNBUSDT}
-      BINANCE_BASE_URL: ${BINANCE_BASE_URL:-https://api.binance.com}
+      BINANCE_DEFAULT_SYMBOL: ${BINANCE_DEFAULT_SYMBOL:-BNBUSDT}
+      BINANCE_API_BASE_URL: ${BINANCE_API_BASE_URL:-https://api.binance.com/}
     ports:
       - "8080:8080"
 
