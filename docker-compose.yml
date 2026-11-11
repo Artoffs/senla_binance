@@ -10,7 +10,7 @@ services:
     volumes:
       - pg_data_binance:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d binance_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d binance" ]
       interval: 5s
       timeout: 5s
       retries: 5
