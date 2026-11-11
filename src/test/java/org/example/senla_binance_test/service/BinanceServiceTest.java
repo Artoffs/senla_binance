@@ -173,7 +173,7 @@ class BinanceServiceTest {
         assertThat(result.totalElements()).isEqualTo(5);
         assertThat(result.hasNext()).isTrue();
 
-        Assertions.assertEquals(binanceResponseEntity.getFetchedAt().truncatedTo(ChronoUnit.SECONDS),
+        Assertions.assertEquals(binanceResponseEntity.getFetchedAt(),
                 result.items().get(0).fetchedAt());
 
     }
